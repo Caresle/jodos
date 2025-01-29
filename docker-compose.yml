@@ -1,0 +1,16 @@
+services:
+  jodos_db:
+    image: postgres:15
+    container_name: jodos_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=jodo
+      - POSTGRES_PASSWORD=jodo
+      - POSTGRES_DB=jodo_db
+    volumes:
+      - jodo-data:/var/lib/postgresql/data
+
+volumes:
+  jodo-data:
+    name: jodo-data
