@@ -1,0 +1,44 @@
+
+# Ignore build directories
+/build/
+/out/
+
+# Ignore IDE-specific files
+/.idea/
+/*.iml
+/.classpath
+/.project
+/.settings/
+/.vscode/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore dependency directories
+/.mvn/
+/target/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Ignore compiled files
+*.class
+
+# Ignore test reports
+/test-results/
+/surefire-reports/
+
+# Ignore Gradle files
+.gradle/
+/.gradle-cache/
+build/
+
+# Ignore Maven files
+target/
+
+# Ignore environmental files
+.env
+.env.*
