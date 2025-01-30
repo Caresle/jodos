@@ -2,13 +2,24 @@ package com.caresle.jodos;
 
 import java.sql.*;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 /**
  * DB
  */
 public class DB {
-  protected static String url = "jdbc:postgresql://localhost:5432/jodo_db?user=jodo&password=jodo";
+  static String url;
+
+  static {
+    Dotenv dotenv = Dotenv.load();
+    String port = dotenv.get("DB_PORT");
+    String database = dotenv.get("POSTGRES_DB");
+    String username = dotenv.get("POSTGRES_USER");
+    String password = dotenv.get("POSTGRES_PASSWORD");
+    url = "jdbc:postgresql://localhost:" + port + "/" + database + "?user=" + username + "&password=" + password; 
+  } 
   
-  public static void query(String query) {
+  public static <T> void query(String query) {
     try {
       Connection conn = DriverManager.getConnection(url);
 
