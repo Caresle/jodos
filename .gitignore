@@ -42,3 +42,4 @@ target/
 # Ignore environmental files
 .env
 .env.*
+!.env.example
