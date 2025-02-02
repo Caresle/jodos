@@ -19,29 +19,15 @@ public class DB {
     url = "jdbc:postgresql://localhost:" + port + "/" + database + "?user=" + username + "&password=" + password; 
   } 
   
-  public static <T> void query(String query) {
-    try {
-      Connection conn = DriverManager.getConnection(url);
 
-      Statement st = conn.createStatement();
-      ResultSet rs = st.executeQuery(query);
-      
-      while (rs.next()) {
-        System.out.println("It's working"); 
-      }
+  private static Connection connection;
 
-      rs.close();
-      st.close();
-      conn.close();
-    } catch (Exception e) {
-        if (e instanceof SQLException) {
-          System.out.println("SQL Exception: " + e.getMessage());
-        }
+  private DB() {}
 
-        if (e instanceof SQLTimeoutException) {
-          System.out.println("SQL TIMEOUT:" + e.getMessage());
-        }
-        System.out.println("General: " + e.getMessage());
+  public static Connection getConnection() throws SQLException {
+    if (connection == null || connection.isClosed()) {
+      connection = DriverManager.getConnection(url);
     }
+    return connection;
   }
 }
