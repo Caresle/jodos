@@ -1,30 +1,16 @@
 package com.caresle.jodos;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /**
  * Todo
  */
-public class Todo {
-  protected int id;
-  protected String name;
-  protected Boolean completed;
-  protected String createadAt;
+public class Todo extends Model {
+  static {
+    table = "tbl_jd_todos";
+  }
 
-  public Todo(ResultSet entity) {
-    try {
-      this.id = Integer.parseInt(entity.getString("id"));
-      this.name = entity.getString("name");
-      this.completed = Integer.parseInt(entity.getString("completed")) == 1;
-      this.createadAt = entity.getString("created_at");
-    } catch (SQLException e) {
-      System.out.println(e.getMessage());
-    }
-  } 
+  public Todo() {}
 
-  @Override
-  public String toString() {
-    return this.id + " " + this.name + " " + this.completed + " " + this.createadAt;
+  public static Todo findById(long id) {
+    return (Todo) Model.findById(Todo.class, id);
   }
 }
