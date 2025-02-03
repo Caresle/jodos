@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class Model {
     protected static String table;
@@ -28,6 +30,38 @@ public abstract class Model {
         }
 
         return insert();
+    }
+
+    public static <T extends Model> ArrayList<T> all(Class<T> modelClass) {
+        ArrayList<T> models = new ArrayList<>();
+        try (Connection connection = DB.getConnection()) {
+            String sql = "SELECT * FROM " + table;
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                try {
+                    T instance = modelClass.getDeclaredConstructor().newInstance();
+
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        String columnName = metaData.getColumnName(i);
+                        Object value = resultSet.getObject(i);
+                        instance.set(columnName, value);
+                    }
+
+                    models.add(instance);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error creating instance of " + modelClass.getName(), e);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL ERROR" + e.getMessage());
+            e.printStackTrace();
+        }
+        return models;
     }
 
     private boolean insert() throws SQLException {
@@ -54,13 +88,17 @@ public abstract class Model {
     }
 
     private boolean update() throws SQLException {
-        String setClause = String.join(" = ? ", attributes.keySet() + " = ? ");
+        int id = (int)attributes.get("id");
+        Set<String> keys = attributes.keySet();
+
+        keys.remove("id");
+        String setClause = String.join(" = ?, ", keys) + " = ?";
         String sql = "UPDATE " + table + " SET " + setClause + " WHERE id = ?";
 
         try ( Connection connection = DB.getConnection()) { 
             PreparedStatement statement = connection.prepareStatement(sql);
             setParameters(statement);
-            statement.setObject(attributes.size() + 1, attributes.get("id"));
+            statement.setObject(keys.size() + 1, id);
             return statement.executeUpdate() > 0;
         }
     }
@@ -108,8 +146,11 @@ public abstract class Model {
     private void setParameters(PreparedStatement statement) throws SQLException {
         int index = 1;
 
-        for (Object value: attributes.values()) {
-            statement.setObject(index++, value);
+        Set<String> keys = attributes.keySet();
+        keys.remove("id");
+
+        for (String key: keys) {
+            statement.setObject(index++, attributes.get(key));
         }
     }
 

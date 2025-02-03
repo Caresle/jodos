@@ -1,5 +1,7 @@
 package com.caresle.jodos;
 
+import java.util.ArrayList;
+
 /**
  * Todo
  */
@@ -12,5 +14,9 @@ public class Todo extends Model {
 
   public static Todo findById(long id) {
     return (Todo) Model.findById(Todo.class, id);
+  }
+
+  public static ArrayList<Todo> all() {
+    return (ArrayList<Todo>) Model.all(Todo.class);
   }
 }
